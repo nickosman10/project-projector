@@ -12,9 +12,22 @@ const wsServer = new WebSocketServer({
 wsServer.on('request', function(request) {
     const connection = request.accept(null, request.origin);
 
-    setInterval(() => {
+    // setInterval(() => {
+    //     connection.sendUTF('replace video!');
+    // }, 35000);
+
+    const RPiGPIOButtons = require('rpi-gpio-buttons');
+    let buttons = new RPiGPIOButtons({ pins: [17] });
+    buttons.on('clicked', pin => {
         connection.sendUTF('replace video!');
-    }, 35000);
+    });
+
+    buttons
+        .init()
+        .catch(error => {
+        console.log('ERROR', error.stack);
+        process.exit(1);
+    });
 
     connection.on('message', function(message) {
       console.log('Received Message:', message.utf8Data);
