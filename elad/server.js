@@ -1,6 +1,7 @@
 // Node.js WebSocket server script
 const http = require('http');
 const WebSocketServer = require('websocket').server;
+const RPiGPIOButtons = require('rpi-gpio-buttons');
 
 const server = http.createServer();
 server.listen(9898);
@@ -16,7 +17,6 @@ wsServer.on('request', function(request) {
     //     connection.sendUTF('replace video!');
     // }, 35000);
 
-    const RPiGPIOButtons = require('rpi-gpio-buttons');
     let buttons = new RPiGPIOButtons({ pins: [17] });
     buttons.on('clicked', pin => {
         connection.sendUTF('replace video!');
@@ -25,9 +25,9 @@ wsServer.on('request', function(request) {
     buttons
         .init()
         .catch(error => {
-        console.log('ERROR', error.stack);
-        process.exit(1);
-    });
+            console.log('ERROR', error.stack);
+            process.exit(1);
+        });
 
     connection.on('message', function(message) {
       console.log('Received Message:', message.utf8Data);
